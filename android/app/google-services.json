@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "997638058017",
+    "project_id": "ta-bultang",
+    "storage_bucket": "ta-bultang.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997638058017:android:bffa195a7eb57d922b7360",
+        "android_client_info": {
+          "package_name": "com.example.ta_bultang"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkEBR_CFbroxiW4slFOWAdmjO8ZR6ZScM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
