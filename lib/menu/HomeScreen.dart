@@ -30,13 +30,6 @@ class _HomescreenState extends State<Homescreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Hello, ${widget.username}',
-              style: const TextStyle(fontSize: 24),
-            ),
-          ),
           Expanded(
             child: const LapanganCardScreen(),
           ),

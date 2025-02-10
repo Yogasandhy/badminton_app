@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ta_bultang/auth/AuthProvider.dart' as my_auth;
+import 'package:ta_bultang/menu/BottomNavBar.dart'; // Import BottomNavBar
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -29,8 +30,11 @@ class _LoginscreenState extends State<Loginscreen> {
             const SnackBar(content: Text('Login successful'))
           );
           
-          // Ganti ke named route '/home'
-          Navigator.pushReplacementNamed(context, '/home');
+          // Navigate to BottomNavBar
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => BottomNavBar()),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Failed to login'))

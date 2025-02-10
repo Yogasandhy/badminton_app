@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_bultang/menu/CommunityScreen.dart';
 import 'HomeScreen.dart';
+import 'package:ta_bultang/profile/ProfileScreen.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -16,7 +17,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     Homescreen(username: 'User'),  // Nanti kita akan ubah ini untuk mengambil username dari provider
     CommunityScreen(),
     Center(child: Text('Booking Screen')),
-    Center(child: Text('Profile Screen')),
+    ProfileScreen(),  // Navigate to ProfileScreen
   ];
 
   @override
