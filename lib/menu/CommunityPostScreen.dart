@@ -20,6 +20,7 @@ class CommunityPostScreen extends StatelessWidget {
     final TextEditingController noteController = TextEditingController();
     String selectedGender = 'Anyone';
     String selectedLevel = 'Amateur';
+    int selectedPlayerCount = 2; // Default to 1 vs 1
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +58,7 @@ class CommunityPostScreen extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Skill Level'),
             ),
             DropdownButtonFormField<int>(
-              value: 2,
+              value: selectedPlayerCount,
               items: [2, 4].map((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
@@ -65,7 +66,7 @@ class CommunityPostScreen extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (newValue) {
-                // Handle player count selection
+                selectedPlayerCount = newValue!;
               },
               decoration: InputDecoration(labelText: 'Number of Players'),
             ),
@@ -84,7 +85,7 @@ class CommunityPostScreen extends StatelessWidget {
                   'level': selectedLevel,
                   'note': noteController.text,
                   'createdAt': FieldValue.serverTimestamp(),
-                  'playerCount': 4, // Update player count to reflect 2 vs 2
+                  'playerCount': selectedPlayerCount, // Use selected player count
                   'joinedPlayers': [], // Initialize joined players list
                 };
                 await Provider.of<CommunityProvider>(context, listen: false)

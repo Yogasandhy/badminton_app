@@ -17,7 +17,8 @@ class CommunityProvider with ChangeNotifier {
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     return _communityPosts.where((post) {
       final data = post.data() as Map<String, dynamic>;
-      return data.containsKey('userId') && data['userId'] == currentUserId;
+      return data.containsKey('userId') && data['userId'] == currentUserId ||
+             data.containsKey('joinedPlayers') && (data['joinedPlayers'] as List).contains(currentUserId);
     }).toList();
   }
 

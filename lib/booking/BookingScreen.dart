@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:ta_bultang/menu/CommunityPostScreen.dart';
 import 'BookingProvider.dart';
 import 'package:intl/intl.dart';
+import 'package:ta_bultang/payment/PaymentScreen.dart';
 
 class BookingScreen extends StatelessWidget {
   final String lapanganId;
@@ -36,6 +37,7 @@ class _BookingFormState extends State<BookingForm> {
   DateTime selectedDate = DateTime.now();
   String selectedTime = '';
   bool isDateSelected = false;
+  final int pricePerHour = 50000; // Add price per hour
 
   @override
   void initState() {
@@ -143,29 +145,23 @@ class _BookingFormState extends State<BookingForm> {
             }),
           ),
         ],
+        if (isDateSelected && selectedTime.isNotEmpty)
+          Text('Price: Rp $pricePerHour', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         SizedBox(height: 20),
         ElevatedButton(
           onPressed: selectedTime.isEmpty
               ? null
-              : () async {
-                  try {
-                    await bookingProvider.addBooking(
-                      widget.lapanganId, 
-                      selectedDate, 
-                      selectedTime,
-                      'pending' // Add the status argument
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Booking successful!')),
-                    );
-                    setState(() {
-                      selectedTime = ''; // Reset selection after booking
-                    });
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Booking failed. Please try again.')),
-                    );
-                  }
+              : () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PaymentScreen(
+                        lapanganId: widget.lapanganId,
+                        date: selectedDate,
+                        time: selectedTime,
+                        price: pricePerHour,
+                      ),
+                    ),
+                  );
                 },
           child: Text('Confirm Booking'),
         ),

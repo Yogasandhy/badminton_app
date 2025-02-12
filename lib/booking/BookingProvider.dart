@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class BookingProvider with ChangeNotifier {
   final CollectionReference _bookingCollection =
@@ -29,7 +30,7 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addBooking(String lapanganId, DateTime date, String time, String status) async {
+  Future<void> addBooking(String lapanganId, DateTime date, String time, String status, int price) async {
     final key = _getKey(lapanganId, date);
     
     try {
@@ -38,6 +39,8 @@ class BookingProvider with ChangeNotifier {
         'date': Timestamp.fromDate(DateTime(date.year, date.month, date.day)),
         'time': time,
         'status': status,
+        'price': price, // Add price field
+        'userId': FirebaseAuth.instance.currentUser!.uid, // Add userId field
         'createdAt': FieldValue.serverTimestamp(),
       });
 

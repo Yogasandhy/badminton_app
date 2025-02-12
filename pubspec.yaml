@@ -34,6 +34,7 @@ dependencies:
   firebase_core: ^3.10.1
   flutter:
     sdk: flutter
+  flutter_midtrans_cc: ^1.0.4
   intl: ^0.20.2
   provider: ^6.1.2
 

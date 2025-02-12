@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:ta_bultang/menu/CommunityScreen.dart';
+import 'package:ta_bultang/history/HistoryScreen.dart';
 import 'HomeScreen.dart';
 import 'package:ta_bultang/profile/ProfileScreen.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  final int initialIndex;
+
+  const BottomNavBar({super.key, this.initialIndex = 0});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   final List<Widget> _screens = [
     Homescreen(username: 'User'),  // Nanti kita akan ubah ini untuk mengambil username dari provider
     CommunityScreen(),
-    Center(child: Text('Booking Screen')),
+    HistoryScreen(),  // Navigate to HistoryScreen
     ProfileScreen(),  // Navigate to ProfileScreen
   ];
 
@@ -37,7 +46,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
-            label: 'Booking',
+            label: 'History',  // Update label to History
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

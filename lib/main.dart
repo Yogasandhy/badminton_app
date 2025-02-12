@@ -9,6 +9,7 @@ import 'package:ta_bultang/lapangan/LapanganProvider.dart';
 import 'package:ta_bultang/booking/BookingProvider.dart';
 import 'package:ta_bultang/menu/BottomNavBar.dart';
 import 'package:ta_bultang/menu/CommunityProvider.dart';
+import 'package:ta_bultang/history/HistoryProvider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<LapanganProvider>(create: (_) => LapanganProvider()),
         ChangeNotifierProvider<BookingProvider>(create: (_) => BookingProvider()),
         ChangeNotifierProvider<CommunityProvider>(create: (_) => CommunityProvider()),
+        ChangeNotifierProvider<HistoryProvider>(create: (_) => HistoryProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
