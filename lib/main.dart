@@ -10,12 +10,24 @@ import 'package:ta_bultang/booking/BookingProvider.dart';
 import 'package:ta_bultang/menu/BottomNavBar.dart';
 import 'package:ta_bultang/menu/CommunityProvider.dart';
 import 'package:ta_bultang/history/HistoryProvider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'dart:io' show Platform;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Inisialisasi WebView berdasarkan platform
+  if (Platform.isAndroid) {
+    WebViewPlatform.instance = AndroidWebViewPlatform();
+  } else if (Platform.isIOS) {
+    WebViewPlatform.instance = WebKitWebViewPlatform();
+  }
+
   runApp(const MyApp());
 }
 
