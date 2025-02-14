@@ -27,7 +27,7 @@ class CommunityProvider with ChangeNotifier {
 
     try {
       _isLoading = true;
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
 
       QuerySnapshot snapshot = await _communityCollection.get();
       _communityPosts = snapshot.docs.where((doc) {
@@ -39,15 +39,26 @@ class CommunityProvider with ChangeNotifier {
       _communityPosts = [];
     } finally {
       _isLoading = false;
-      notifyListeners();
+      Future.microtask(() => notifyListeners());
     }
   }
 
   Future<void> addCommunityPost(Map<String, dynamic> postData) async {
     try {
       postData['userId'] = FirebaseAuth.instance.currentUser!.uid; // Tambahkan ID pengguna saat posting
-      await _communityCollection.add(postData);
+      postData['status'] = 'active'; // Add status field
+      DocumentReference postRef = await _communityCollection.add(postData);
       fetchCommunityPosts();
+
+      // Set a timeout to expire the post if player requirement is not met within 1 minute (for testing)
+      Future.delayed(Duration(minutes: 1), () async {
+        DocumentSnapshot snapshot = await postRef.get();
+        final data = snapshot.data() as Map<String, dynamic>;
+        if (snapshot.exists && data['status'] == 'active' && data['joinedPlayers'].length < data['playerCount']) {
+          await postRef.update({'status': 'expired'});
+          fetchCommunityPosts(); // Ensure posts are fetched after updating status
+        }
+      });
     } catch (e) {
       print('Error adding community post: $e');
       throw e;

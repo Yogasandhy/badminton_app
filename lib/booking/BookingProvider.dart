@@ -17,7 +17,7 @@ class BookingProvider with ChangeNotifier {
     return '$lapanganId-${date.toIso8601String().split('T')[0]}';
   }
 
-  // Check if time is booked
+  // Check if time is booked or pending
   bool isTimeBooked(String lapanganId, DateTime date, String time) {
     final key = _getKey(lapanganId, date);
     return bookedTimesMap[key]?.contains(time) ?? false;
@@ -30,7 +30,13 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addBooking(String lapanganId, DateTime date, String time, String status, int price) async {
+  Future<void> addBooking({
+    required String lapanganId,
+    required DateTime date,
+    required String time,
+    required String status,
+    required int price,
+  }) async {
     final key = _getKey(lapanganId, date);
     
     try {
@@ -63,15 +69,17 @@ class BookingProvider with ChangeNotifier {
 
       // Query for the specific date (midnight to midnight)
       DateTime startOfDay = DateTime(date.year, date.month, date.day);
-      startOfDay.add(Duration(days: 1));
+      DateTime endOfDay = startOfDay.add(Duration(days: 1));
 
       QuerySnapshot snapshot = await _bookingCollection
           .where('lapanganId', isEqualTo: lapanganId)
-          .where('date', isEqualTo: Timestamp.fromDate(startOfDay))
+          .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          .where('date', isLessThan: Timestamp.fromDate(endOfDay))
           .get();
 
-      // Update the map with new data
+      // Update the map with new data, including active, pending, and completed bookings
       bookedTimesMap[key] = snapshot.docs
+          .where((doc) => doc.get('status') == 'active' || doc.get('status') == 'pending' || doc.get('status') == 'completed')
           .map((doc) => doc.get('time') as String)
           .toList();
 

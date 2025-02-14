@@ -15,14 +15,18 @@ class CommunityPostScreen extends StatelessWidget {
     required this.time,
   });
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController noteController = TextEditingController();
     String selectedGender = 'Anyone';
     String selectedLevel = 'Amateur';
     int selectedPlayerCount = 2; // Default to 1 vs 1
+    int pricePerHour = 50000; // Add price per hour
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Post to Community'),
       ),
@@ -75,6 +79,8 @@ class CommunityPostScreen extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Additional Notes'),
             ),
             SizedBox(height: 20),
+            Text('Price: Rp $pricePerHour', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 final postData = {
@@ -87,13 +93,17 @@ class CommunityPostScreen extends StatelessWidget {
                   'createdAt': FieldValue.serverTimestamp(),
                   'playerCount': selectedPlayerCount, // Use selected player count
                   'joinedPlayers': [], // Initialize joined players list
+                  'price': pricePerHour, // Add price field
                 };
-                await Provider.of<CommunityProvider>(context, listen: false)
-                    .addCommunityPost(postData);
-                ScaffoldMessenger.of(context).showSnackBar(
+
+                // Access the provider before navigating away
+                final communityProvider = Provider.of<CommunityProvider>(context, listen: false);
+                await communityProvider.addCommunityPost(postData);
+
+                ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
                   SnackBar(content: Text('Posted to community!')),
                 );
-                Navigator.of(context).pushReplacement(
+                Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
                   MaterialPageRoute(builder: (context) => BottomNavBar()),
                 );
               },

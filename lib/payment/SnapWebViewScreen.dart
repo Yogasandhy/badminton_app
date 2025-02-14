@@ -30,8 +30,8 @@ class _SnapWebViewScreenState extends State<SnapWebViewScreen> {
             print("🔄 Halaman selesai dimuat: $url");
           },
           onNavigationRequest: (request) {
-            if (request.url.contains('status=success')) {
-              // Jika URL mengandung status=success, kembali ke halaman sebelumnya
+            if (request.url.contains('transaction_status=settlement')) {
+              // Jika URL mengandung transaction_status=settlement, kembali ke halaman sebelumnya
               Navigator.pop(context, 'success');
             }
             return NavigationDecision.navigate;

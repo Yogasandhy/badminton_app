@@ -61,6 +61,7 @@ class _CommunityScreenState extends State<CommunityScreen> with SingleTickerProv
           itemCount: posts.length,
           itemBuilder: (context, index) {
             var post = posts[index];
+            final data = post.data() as Map<String, dynamic>;
             return GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
@@ -70,17 +71,21 @@ class _CommunityScreenState extends State<CommunityScreen> with SingleTickerProv
                 );
               },
               child: CommunityCard(
-                gender: post['gender'],
-                level: post['level'],
-                note: post['note'],
-                time: post['time'],
-                playerCount: post['playerCount'],
-                joinedPlayers: List<String>.from(post['joinedPlayers']),
-                userId: post['userId'],
+                gender: data['gender'],
+                level: data['level'],
+                note: data['note'],
+                time: data['time'],
+                playerCount: data['playerCount'],
+                joinedPlayers: List<String>.from(data['joinedPlayers']),
+                userId: data['userId'],
+                price: data['price'], // Pass price to CommunityCard
                 onJoin: () async {
                   await Provider.of<CommunityProvider>(context, listen: false)
                       .joinCommunityPost(post.id);
                 },
+                lapanganId: data['lapanganId'], // Pass lapanganId to CommunityCard
+                date: data['date'].toDate(), // Pass date to CommunityCard
+                status: data['status'] ?? 'active', // Provide default value for status
               ),
             );
           },

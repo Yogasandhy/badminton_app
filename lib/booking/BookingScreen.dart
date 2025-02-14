@@ -38,15 +38,21 @@ class _BookingFormState extends State<BookingForm> {
   String selectedTime = '';
   bool isDateSelected = false;
   final int pricePerHour = 50000; // Add price per hour
+  late BookingProvider bookingProvider; // Add a late variable to hold the reference
 
   @override
   void initState() {
     super.initState();
     // Load initial bookings
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<BookingProvider>(context, listen: false)
-          .getBookings(widget.lapanganId, selectedDate);
+      bookingProvider.getBookings(widget.lapanganId, selectedDate);
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    bookingProvider = Provider.of<BookingProvider>(context, listen: false);
   }
 
   bool _isTimeInPast(String time) {
@@ -60,6 +66,70 @@ class _BookingFormState extends State<BookingForm> {
       int.parse(timeParts[1]),
     );
     return timeDate.isBefore(now);
+  }
+
+  bool _isTimeWithinThirtyMinutes(String time) {
+    final now = DateTime.now();
+    final timeParts = time.split(':');
+    final timeDate = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      int.parse(timeParts[0]),
+      int.parse(timeParts[1]),
+    );
+    return timeDate.isBefore(now.add(Duration(minutes: 30)));
+  }
+
+  bool _isTimeWithinTwoHours(String time) {
+    final now = DateTime.now();
+    final timeParts = time.split(':');
+    final timeDate = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      int.parse(timeParts[0]),
+      int.parse(timeParts[1]),
+    );
+    return timeDate.isBefore(now.add(Duration(hours: 2)));
+  }
+
+  void _showBookingRestrictionDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Booking Restriction'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmBooking() {
+    if (_isTimeWithinThirtyMinutes(selectedTime)) {
+      _showBookingRestrictionDialog('You can only book at least 30 minutes in advance.');
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PaymentScreen(
+            lapanganId: widget.lapanganId,
+            date: selectedDate,
+            time: selectedTime,
+            price: pricePerHour,
+            fromBookingScreen: true, // Pass flag indicating navigation from BookingScreen
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -149,35 +219,28 @@ class _BookingFormState extends State<BookingForm> {
           Text('Price: Rp $pricePerHour', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: selectedTime.isEmpty
+          onPressed: selectedTime.isEmpty || bookingProvider.isLoading
               ? null
-              : () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PaymentScreen(
-                        lapanganId: widget.lapanganId,
-                        date: selectedDate,
-                        time: selectedTime,
-                        price: pricePerHour,
-                      ),
-                    ),
-                  );
-                },
+              : _confirmBooking,
           child: Text('Confirm Booking'),
         ),
         ElevatedButton(
-          onPressed: selectedTime.isEmpty
+          onPressed: selectedTime.isEmpty || bookingProvider.isLoading
               ? null
               : () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => CommunityPostScreen(
-                        lapanganId: widget.lapanganId,
-                        date: selectedDate,
-                        time: selectedTime,
+                  if (_isTimeWithinTwoHours(selectedTime)) {
+                    _showBookingRestrictionDialog('You can only find a partner at least 2 hours in advance.');
+                  } else {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CommunityPostScreen(
+                          lapanganId: widget.lapanganId,
+                          date: selectedDate,
+                          time: selectedTime,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
           child: Text('Find Partner'),
         ),
@@ -188,8 +251,7 @@ class _BookingFormState extends State<BookingForm> {
   @override
   void dispose() {
     // Clear bookings when leaving the screen
-    Provider.of<BookingProvider>(context, listen: false)
-        .clearBookings(widget.lapanganId, selectedDate);
+    bookingProvider.clearBookings(widget.lapanganId, selectedDate);
     super.dispose();
   }
 }

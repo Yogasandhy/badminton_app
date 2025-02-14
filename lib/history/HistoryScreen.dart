@@ -14,7 +14,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     Provider.of<HistoryProvider>(context, listen: false).fetchHistory();
   }
 
@@ -26,6 +26,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
         bottom: TabBar(
           controller: _tabController,
           tabs: [
+            Tab(text: 'Pending'),
             Tab(text: 'Active'),
             Tab(text: 'Completed'),
             Tab(text: 'Canceled'),
@@ -35,23 +36,26 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
       body: TabBarView(
         controller: _tabController,
         children: [
+          _buildHistoryList(context, status: 'pending'),
           _buildHistoryList(context, status: 'active'),
           _buildHistoryList(context, status: 'completed'),
-          _buildHistoryList(context, status: 'canceled'),
+          _buildHistoryList(context, status: 'canceled', refresh: false),
         ],
       ),
     );
   }
 
-  Widget _buildHistoryList(BuildContext context, {required String status}) {
+  Widget _buildHistoryList(BuildContext context, {required String status, bool refresh = true}) {
     return Consumer<HistoryProvider>(
       builder: (context, historyProvider, child) {
-        if (historyProvider.isLoading) {
+        if (historyProvider.isLoading && refresh) {
           return Center(child: CircularProgressIndicator());
         }
 
         var bookings;
-        if (status == 'active') {
+        if (status == 'pending') {
+          bookings = historyProvider.pendingPaymentBookings;
+        } else if (status == 'active') {
           bookings = historyProvider.activeBookings;
         } else if (status == 'completed') {
           bookings = historyProvider.completedBookings;
